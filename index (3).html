@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hydration</title>
+<style>
+  :root {
+    --ink: #1C2833;
+    --ink-soft: #5A6B78;
+    --line: #E2E8ED;
+    --bg: #FAFBFC;
+    --card: #FFFFFF;
+    --accent: #2B7A8C;
+    --accent-deep: #1F5D6C;
+    --accent-light: #DDEEF2;
+    --water-top: #4FA8BC;
+    --water-bottom: #1F5D6C;
+    --radius: 10px;
+    box-sizing: border-box;
+  }
+  * { box-sizing: inherit; }
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Segoe UI", "Segoe UI Web", -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .wrap {
+    max-width: 460px;
+    margin: 0 auto;
+    padding: 28px 20px 40px;
+  }
+  header {
+    margin-bottom: 20px;
+  }
+  header .eyebrow {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0 0 2px;
+  }
+  header h1 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  /* Bottle */
+  .bottle-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    padding: 8px 0 4px;
+  }
+  .bottle-frame {
+    position: relative;
+    width: 108px;
+    height: 220px;
+  }
+  .bottle-svg { width: 100%; height: 100%; display: block; }
+  .fill-clip { transition: transform 900ms cubic-bezier(.22,.9,.3,1); }
+  .wave {
+    animation: waveShift 3.2s linear infinite;
+  }
+  @keyframes waveShift {
+    from { transform: translateX(0); }
+    to { transform: translateX(-140px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wave { animation: none; }
+    .fill-clip { transition: none; }
+  }
+
+  .stat-list { display: flex; flex-direction: column; gap: 16px; }
+  .stat { }
+  .stat .label { font-size: 12.5px; color: var(--ink-soft); margin: 0 0 2px; }
+  .stat .value { font-size: 20px; font-weight: 600; margin: 0; font-variant-numeric: tabular-nums; }
+  .stat .value.accent { color: var(--accent-deep); }
+
+  hr.rule { border: none; border-top: 1px solid var(--line); margin: 20px 0; }
+
+  h2.section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin: 0 0 12px;
+  }
+
+  .quick-log {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .qbtn {
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink);
+    border-radius: var(--radius);
+    padding: 12px 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 150ms ease, background 150ms ease, transform 80ms ease;
+  }
+  .qbtn:hover { border-color: var(--accent); background: var(--accent-light); }
+  .qbtn:active { transform: scale(0.97); }
+  .qbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .custom-row {
+    display: flex;
+    gap: 10px;
+  }
+  .custom-row input[type="number"] {
+    flex: 1;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 11px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--ink);
+    background: var(--bg);
+  }
+  .custom-row input[type="number"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .primary-btn {
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 11px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 150ms ease;
+    white-space: nowrap;
+  }
+  .primary-btn:hover { background: var(--accent-deep); }
+  .primary-btn:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 2px; }
+
+  .settings-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .settings-row .label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  .settings-row .label-row span:first-child { color: var(--ink-soft); }
+  .settings-row .label-row span:last-child { font-weight: 600; color: var(--ink); }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--line);
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+
+  select#reminderFreq {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--ink);
+    background: var(--card);
+  }
+  select#reminderFreq:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .footer-note {
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 8px;
+  }
+  .footer-note button {
+    background: none;
+    border: none;
+    color: var(--accent-deep);
+    font-size: 12px;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 4px;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease, transform 200ms ease;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Wellness · Hydration</p>
+    <h1>Water intake</h1>
+  </header>
+
+  <div class="card">
+    <div class="bottle-row">
+      <div class="bottle-frame">
+        <svg class="bottle-svg" viewBox="0 0 108 220" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <clipPath id="bottleClip">
+              <path d="M40 6 h28 v20 c0 4 4 6 8 8 c8 4 12 12 12 22 v128 c0 14 -11 25 -25 25 h-18 c-14 0 -25 -11 -25 -25 v-128 c0 -10 4 -18 12 -22 c4 -2 8 -4 8 -8 z"/>
+            </clipPath>
+            <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="var(--water-top)"/>
+              <stop offset="100%" stop-color="var(--water-bottom)"/>
+            </linearGradient>
+          </defs>
+
+          <path d="M40 6 h28 v20 c0 4 4 6 8 8 c8 4 12 12 12 22 v128 c0 14 -11 25 -25 25 h-18 c-14 0 -25 -11 -25 -25 v-128 c0 -10 4 -18 12 -22 c4 -2 8 -4 8 -8 z"
+                fill="#fff" stroke="var(--line)" stroke-width="2"/>
+
+          <g clip-path="url(#bottleClip)">
+            <g id="fillGroup" class="fill-clip" transform="translate(0,220)">
+              <rect x="0" y="0" width="108" height="220" fill="url(#waterGrad)"/>
+              <g class="wave" fill="var(--water-top)" opacity="0.55">
+                <path d="M-40 4 Q -20 -6 0 4 T 40 4 T 80 4 T 120 4 T 160 4 V20 H-40 Z"/>
+              </g>
+            </g>
+          </g>
+
+          <path d="M40 6 h28 v20 c0 4 4 6 8 8 c8 4 12 12 12 22 v128 c0 14 -11 25 -25 25 h-18 c-14 0 -25 -11 -25 -25 v-128 c0 -10 4 -18 12 -22 c4 -2 8 -4 8 -8 z"
+                fill="none" stroke="var(--ink)" stroke-opacity="0.12" stroke-width="2"/>
+
+          <line x1="30" y1="80" x2="35" y2="80" stroke="var(--ink-soft)" stroke-width="1" opacity="0.4"/>
+          <line x1="30" y1="130" x2="35" y2="130" stroke="var(--ink-soft)" stroke-width="1" opacity="0.4"/>
+          <line x1="30" y1="180" x2="35" y2="180" stroke="var(--ink-soft)" stroke-width="1" opacity="0.4"/>
+        </svg>
+      </div>
+
+      <div class="stat-list">
+        <div class="stat">
+          <p class="label">Progress</p>
+          <p class="value accent" id="progressVal">0%</p>
+        </div>
+        <div class="stat">
+          <p class="label">Logged</p>
+          <p class="value" id="loggedVal">0 ml</p>
+        </div>
+        <div class="stat">
+          <p class="label">Remaining</p>
+          <p class="value" id="remainingVal">2500 ml</p>
+        </div>
+        <div class="stat">
+          <p class="label">Last drink</p>
+          <p class="value" id="lastVal">—</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Quick log</h2>
+    <div class="quick-log">
+      <button class="qbtn" data-amt="250">+250 ml</button>
+      <button class="qbtn" data-amt="500">+500 ml</button>
+      <button class="qbtn" data-amt="750">+750 ml</button>
+    </div>
+    <h2 class="section-title">Custom amount</h2>
+    <div class="custom-row">
+      <input type="number" id="customAmt" placeholder="Amount in ml" min="1" inputmode="numeric">
+      <button class="primary-btn" id="logCustomBtn">Log</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Settings</h2>
+    <div class="settings-grid">
+      <div class="settings-row">
+        <div class="label-row"><span>Daily goal</span><span id="goalLabel">2500 ml</span></div>
+        <input type="range" id="goalSlider" min="1000" max="5000" step="100" value="2500">
+      </div>
+      <div class="settings-row">
+        <div class="label-row"><span>Reminder frequency</span><span></span></div>
+        <select id="reminderFreq">
+          <option value="30">Every 30 minutes</option>
+          <option value="60" selected>Every hour</option>
+          <option value="120">Every 2 hours</option>
+          <option value="0">Off</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <p class="footer-note">Data is stored on this device only.<button id="resetBtn" type="button">Reset today's log</button></p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  var STORAGE_KEY = 'hydration_tracker_v1';
+  var state = { goal: 2500, entries: [], reminderFreq: 60 };
+
+  function todayStr() {
+    var d = new Date();
+    return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+  }
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (parsed.day === todayStr()) {
+          state.entries = parsed.entries || [];
+        }
+        if (typeof parsed.goal === 'number') state.goal = parsed.goal;
+        if (typeof parsed.reminderFreq === 'number') state.reminderFreq = parsed.reminderFreq;
+      }
+    } catch (e) { /* storage unavailable, continue with defaults */ }
+  }
+
+  function save() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        day: todayStr(),
+        entries: state.entries,
+        goal: state.goal,
+        reminderFreq: state.reminderFreq
+      }));
+    } catch (e) { /* ignore */ }
+  }
+
+  function totalToday() {
+    return state.entries.reduce(function (sum, e) { return sum + e.amt; }, 0);
+  }
+
+  function render() {
+    var total = totalToday();
+    var pct = Math.max(0, Math.min(100, Math.round((total / state.goal) * 100)));
+    var remaining = Math.max(state.goal - total, 0);
+
+    document.getElementById('progressVal').textContent = pct + '%';
+    document.getElementById('loggedVal').textContent = total + ' ml';
+    document.getElementById('remainingVal').textContent = remaining + ' ml';
+    document.getElementById('goalLabel').textContent = state.goal + ' ml';
+    document.getElementById('goalSlider').value = state.goal;
+
+    var last = state.entries[state.entries.length - 1];
+    document.getElementById('lastVal').textContent = last ? timeAgo(last.t) : '—';
+
+    var fillHeight = 208 * (pct / 100);
+    var g = document.getElementById('fillGroup');
+    g.setAttribute('transform', 'translate(0,' + (220 - fillHeight) + ')');
+  }
+
+  function timeAgo(ts) {
+    var diffMin = Math.round((Date.now() - ts) / 60000);
+    if (diffMin < 1) return 'Just now';
+    if (diffMin === 1) return '1 min ago';
+    if (diffMin < 60) return diffMin + ' min ago';
+    var h = Math.round(diffMin / 60);
+    return h + (h === 1 ? ' hr ago' : ' hrs ago');
+  }
+
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(showToast._tm);
+    showToast._tm = setTimeout(function () { t.classList.remove('show'); }, 1600);
+  }
+
+  function logAmount(amt) {
+    if (!amt || amt <= 0) return;
+    state.entries.push({ amt: amt, t: Date.now() });
+    save();
+    render();
+    showToast('Logged ' + amt + ' ml');
+  }
+
+  document.querySelectorAll('.qbtn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      logAmount(parseInt(btn.getAttribute('data-amt'), 10));
+    });
+  });
+
+  document.getElementById('logCustomBtn').addEventListener('click', function () {
+    var input = document.getElementById('customAmt');
+    var val = parseInt(input.value, 10);
+    if (val > 0) {
+      logAmount(val);
+      input.value = '';
+    } else {
+      showToast('Enter a valid amount');
+    }
+  });
+
+  document.getElementById('customAmt').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') document.getElementById('logCustomBtn').click();
+  });
+
+  document.getElementById('goalSlider').addEventListener('input', function () {
+    state.goal = parseInt(this.value, 10);
+    save();
+    render();
+  });
+
+  document.getElementById('reminderFreq').addEventListener('change', function () {
+    state.reminderFreq = parseInt(this.value, 10);
+    save();
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', function () {
+    if (confirm("Reset today's log? This can't be undone.")) {
+      state.entries = [];
+      save();
+      render();
+      showToast('Log cleared');
+    }
+  });
+
+  load();
+  document.getElementById('reminderFreq').value = String(state.reminderFreq);
+  render();
+})();
+</script>
+</body>
+</html>
